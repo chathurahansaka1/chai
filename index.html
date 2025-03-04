@@ -43,9 +43,9 @@
     }
 
     .sidebar {
-      width: clamp(220px, 25vw, 320px);
+      width: 320px;
       background: var(--sidebar-bg);
-      padding: clamp(1rem, 2vw, 2rem) clamp(1rem, 1.5vw, 1.5rem);
+      padding: 2rem 1.5rem;
       overflow-y: auto;
       border-right: 1px solid var(--code-border);
       transition: transform 0.3s ease;
@@ -61,16 +61,16 @@
     .chat-list {
       display: flex;
       flex-direction: column;
-      gap: clamp(0.5rem, 1vw, 1rem);
+      gap: 1rem;
     }
 
     .chat-item {
-      padding: clamp(0.6rem, 1.5vw, 1rem);
+      padding: 1rem;
       background: var(--header-bg);
-      border-radius: clamp(10px, 1.5vw, 16px);
+      border-radius: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-size: clamp(0.9rem, 1.5vw, 1rem);
+      font-size: 1rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -92,7 +92,7 @@
 
     header {
       background: var(--header-bg);
-      padding: clamp(1rem, 2vw, 1.5rem);
+      padding: 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -101,14 +101,14 @@
     }
 
     header h1 {
-      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-size: clamp(1.4rem, 3vw, 1.8rem);
       font-weight: 500;
       letter-spacing: 0.8px;
     }
 
     .header-buttons {
       display: flex;
-      gap: clamp(0.5rem, 1vw, 1rem);
+      gap: 1rem;
       align-items: center;
     }
 
@@ -116,18 +116,17 @@
       background: var(--accent-color);
       border: none;
       color: var(--text-color);
-      padding: clamp(0.5rem, 1vw, 0.8rem) clamp(1rem, 2vw, 1.5rem);
-      border-radius: clamp(20px, 2vw, 25px);
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
       font-weight: 500;
       box-shadow: var(--shadow);
-      font-size: clamp(0.9rem, 1.5vw, 1rem);
     }
 
     .sidebar-toggle {
       display: none;
-      padding: clamp(0.5rem, 1vw, 0.8rem);
+      padding: 0.8rem;
       border-radius: 50%;
     }
 
@@ -139,19 +138,19 @@
     .chat-container {
       flex: 1;
       overflow-y: auto;
-      padding: clamp(1rem, 2vw, 2rem);
-      max-width: clamp(800px, 90vw, 1300px);
+      padding: 2rem;
+      max-width: 1300px;
       margin: 0 auto;
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: clamp(1rem, 1.5vw, 1.5rem);
+      gap: 1.5rem;
     }
 
     .message {
-      max-width: clamp(60%, 75vw, 75%);
-      padding: clamp(0.8rem, 1.5vw, 1.2rem) clamp(1rem, 2vw, 1.8rem);
-      border-radius: clamp(14px, 2vw, 20px);
+      max-width: 75%;
+      padding: 1.2rem 1.8rem;
+      border-radius: 20px;
       word-wrap: break-word;
       animation: floatIn 0.4s ease-out forwards;
       box-shadow: var(--shadow);
@@ -181,15 +180,13 @@
     .code-canvas {
       background: var(--code-bg);
       border: 1px solid var(--code-border);
-      border-radius: clamp(10px, 1.5vw, 14px);
-      padding: clamp(1rem, 1.5vw, 1.5rem);
-      margin-top: clamp(0.5rem, 1vw, 1rem);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-top: 1rem;
       position: relative;
       font-family: 'Fira Code', 'Courier New', monospace;
-      font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+      font-size: 0.95rem;
       box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.15);
-      overflow-x: auto;
-      max-width: 100%;
     }
 
     .code-canvas pre {
@@ -199,21 +196,22 @@
 
     .copy-btn, .download-btn {
       position: absolute;
-      top: clamp(0.5rem, 1vw, 0.8rem);
-      right: clamp(0.5rem, 1vw, 0.8rem);
+      top: 0.8rem;
+      right: 0.8rem;
       background: var(--accent-color);
       border: none;
-      padding: clamp(0.3rem, 0.8vw, 0.5rem) clamp(0.8rem, 1.5vw, 1.2rem);
-      border-radius: clamp(15px, 2vw, 20px);
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
       cursor: pointer;
       color: var(--text-color);
-      font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+      font-size: 0.9rem;
       transition: background 0.3s ease;
     }
 
     .download-btn {
       top: auto;
-      bottom: clamp(0.5rem, 1vw, 0.8rem);
+      bottom: 0.8rem;
+      right: 0.8rem;
     }
 
     .copy-btn:hover, .download-btn:hover {
@@ -222,11 +220,11 @@
 
     .input-area {
       background: var(--input-bg);
-      padding: clamp(1rem, 1.5vw, 1.5rem) clamp(1.5rem, 2vw, 2rem);
+      padding: 1.5rem 2rem;
       display: flex;
-      gap: clamp(0.8rem, 1vw, 1rem);
+      gap: 1rem;
       box-shadow: var(--shadow);
-      max-width: clamp(800px, 90vw, 1300px);
+      max-width: 1300px;
       margin: 0 auto;
       width: 100%;
       align-items: center;
@@ -234,24 +232,24 @@
 
     .input-wrapper {
       flex: 1;
-      min-width: clamp(200px, 50vw, 280px);
+      min-width: 280px;
       display: flex;
       align-items: center;
-      gap: clamp(0.5rem, 1vw, 1rem);
+      gap: 1rem;
       background: var(--header-bg);
-      padding: clamp(0.4rem, 0.8vw, 0.6rem);
-      border-radius: clamp(25px, 3vw, 30px);
+      padding: 0.6rem;
+      border-radius: 30px;
       box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.15);
     }
 
     .input-area input[type="text"] {
       flex: 1;
-      padding: clamp(0.8rem, 1.5vw, 1rem) clamp(1rem, 1.5vw, 1.2rem);
+      padding: 1rem 1.2rem;
       border: none;
-      border-radius: clamp(20px, 2.5vw, 25px);
+      border-radius: 25px;
       background: transparent;
       color: var(--text-color);
-      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+      font-size: 1.1rem;
       outline: none;
     }
 
@@ -262,14 +260,14 @@
     .msg-btn, .image-gen-btn, .upload-btn {
       background: var(--accent-color);
       border: none;
-      width: clamp(36px, 5vw, 45px);
-      height: clamp(36px, 5vw, 45px);
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1rem, 1.8vw, 1.3rem);
+      font-size: 1.3rem;
       transition: all 0.3s ease;
       box-shadow: var(--shadow);
     }
@@ -282,12 +280,12 @@
     .status-indicator {
       display: flex;
       align-items: center;
-      gap: clamp(0.2rem, 0.5vw, 0.4rem);
+      gap: 0.4rem;
     }
 
     .status-indicator span {
-      width: clamp(8px, 1vw, 10px);
-      height: clamp(8px, 1vw, 10px);
+      width: 10px;
+      height: 10px;
       background: var(--accent-color);
       border-radius: 50%;
       animation: pulse 1.2s infinite;
@@ -305,8 +303,8 @@
     .generated-image, .uploaded-image {
       max-width: 100%;
       width: 100%;
-      border-radius: clamp(10px, 1.5vw, 14px);
-      margin-top: clamp(0.5rem, 1vw, 1rem);
+      border-radius: 14px;
+      margin-top: 1rem;
       box-shadow: var(--shadow);
       transition: transform 0.2s ease;
     }
@@ -320,7 +318,7 @@
         position: absolute;
         height: 100%;
         z-index: 20;
-        width: clamp(200px, 30vw, 260px);
+        width: 260px;
       }
       
       .sidebar.hidden {
@@ -330,6 +328,10 @@
       .sidebar-toggle {
         display: block;
       }
+      
+      .chat-container {
+        padding: 1.2rem;
+      }
     }
 
     @media (max-width: 768px) {
@@ -338,29 +340,35 @@
       }
       
       .input-area {
-        padding: clamp(0.8rem, 1.5vw, 1rem);
+        padding: 1rem;
       }
       
       .input-wrapper {
-        min-width: clamp(180px, 50vw, 220px);
+        min-width: 220px;
+      }
+      
+      .msg-btn, .image-gen-btn, .upload-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
       }
     }
 
     @media (max-width: 480px) {
       .input-wrapper {
         flex-wrap: wrap;
-        padding: clamp(0.3rem, 0.8vw, 0.5rem);
-        gap: clamp(0.4rem, 1vw, 0.8rem);
+        padding: 0.5rem;
+        gap: 0.8rem;
       }
       
       .msg-btn, .image-gen-btn, .upload-btn {
-        width: clamp(32px, 8vw, 36px);
-        height: clamp(32px, 8vw, 36px);
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
       }
       
       .sidebar {
-        width: clamp(180px, 50vw, 220px);
+        width: 220px;
       }
     }
   </style>
