@@ -395,8 +395,8 @@
   </div>
 
   <script>
-    const API_URL = "https://dev-pycodz-blackbox.pantheonsite.io/DEvZ44d/deepseek.php?text=";
-    const IMAGE_API_URL = "https://dev-pycodz-blackbox.pantheonsite.io/DEvZ44d/imger.php?img=";
+    const API_URL = "https://cors-anywhere.herokuapp.com/https://dev-pycodz-blackbox.pantheonsite.io/DEvZ44d/deepseek.php?text=";
+    const IMAGE_API_URL = "https://cors-anywhere.herokuapp.com/https://dev-pycodz-blackbox.pantheonsite.io/DEvZ44d/imger.php?img=";
     let chats = [];
     let currentChatId = null;
     let messages = [];
@@ -424,15 +424,15 @@
           query = `Analyze this image: ${text} (Image context: uploaded image)`;
         }
         const response = await fetch(API_URL + encodeURIComponent(query));
+        if (!response.ok) throw new Error("API response not OK");
         const data = await response.text();
         removeMessage(tempId);
-
         const { textOnly, codeBlocks } = parseAiResponse(data);
         addMessage("assistant", textOnly, false, codeBlocks);
       } catch (err) {
         removeMessage(tempId);
-        addMessage("assistant", "Error connecting to AI.", false);
-        console.error(err);
+        addMessage("assistant", "Sorry, unable to connect to the AI. Please try again later.", false);
+        console.error("Fetch error:", err);
       }
     }
 
@@ -442,14 +442,13 @@
       try {
         const imageUrl = IMAGE_API_URL + encodeURIComponent(prompt);
         const response = await fetch(imageUrl);
-        if (!response.ok) throw new Error("Failed to generate image");
-
+        if (!response.ok) throw new Error("Image API response not OK");
         removeMessage(tempId);
         addImageMessage(imageUrl, true);
       } catch (err) {
         removeMessage(tempId);
-        addMessage("assistant", "Failed to generate image.", false);
-        console.error(err);
+        addMessage("assistant", "Failed to generate image. Please try again.", false);
+        console.error("Image fetch error:", err);
       }
     }
 
@@ -483,14 +482,15 @@
           try {
             const query = `Analyze this image: ${text} (Image context: uploaded image)`;
             const response = await fetch(API_URL + encodeURIComponent(query));
+            if (!response.ok) throw new Error("API response not OK");
             const data = await response.text();
             removeMessage(tempId);
             const { textOnly, codeBlocks } = parseAiResponse(data);
             addMessage("assistant", textOnly, false, codeBlocks);
           } catch (err) {
             removeMessage(tempId);
-            addMessage("assistant", "Error analyzing image.", false);
-            console.error(err);
+            addMessage("assistant", "Error analyzing image. Please try again.", false);
+            console.error("Analysis fetch error:", err);
           }
         }
         
