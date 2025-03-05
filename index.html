@@ -2,632 +2,288 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Chat Bot with Image Generation</title>
+  <title>ChatGPT-like Interface</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    :root {
-      --bg-color: #1c2526;
-      --header-bg: #12191a;
-      --input-bg: #2d3839;
-      --sidebar-bg: #252f30;
-      --user-bubble: #2a9df4;
-      --assistant-bubble: #404b4c;
-      --text-color: #e0ebeb;
-      --accent-color: #00d9a5;
-      --accent-hover: #00c492;
-      --code-bg: #2a3435;
-      --code-border: #5a6768;
-      --shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    }
-
-    * {
-      box-sizing: border-box;
+    /* Global dark theme */
+    * { box-sizing: border-box; }
+    body {
       margin: 0;
       padding: 0;
-    }
-
-    body {
-      background: var(--bg-color);
-      color: var(--text-color);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      min-height: 100vh;
+      background: #343541;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       flex-direction: column;
-      line-height: 1.6;
+      height: 100vh;
     }
-
-    .container {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .sidebar {
-      width: clamp(220px, 25vw, 320px);
-      background: var(--sidebar-bg);
-      padding: clamp(1rem, 2vw, 2rem) clamp(1rem, 1.5vw, 1.5rem);
-      overflow-y: auto;
-      border-right: 1px solid var(--code-border);
-      transition: transform 0.3s ease;
-    }
-
-    .sidebar.hidden {
-      transform: translateX(-100%);
-      position: absolute;
-      z-index: 20;
-      height: 100%;
-    }
-
-    .chat-list {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(0.5rem, 1vw, 1rem);
-    }
-
-    .chat-item {
-      padding: clamp(0.6rem, 1.5vw, 1rem);
-      background: var(--header-bg);
-      border-radius: clamp(10px, 1.5vw, 16px);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: clamp(0.9rem, 1.5vw, 1rem);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      box-shadow: var(--shadow);
-    }
-
-    .chat-item:hover, .chat-item.active {
-      background: var(--accent-color);
-      color: #fff;
-      transform: translateY(-2px);
-    }
-
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
+    /* Header */
     header {
-      background: var(--header-bg);
-      padding: clamp(1rem, 2vw, 1.5rem);
+      background: #202123;
+      padding: 1em;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: var(--shadow);
-      z-index: 10;
     }
-
-    header h1 {
-      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-      font-weight: 500;
-      letter-spacing: 0.8px;
-    }
-
-    .header-buttons {
-      display: flex;
-      gap: clamp(0.5rem, 1vw, 1rem);
-      align-items: center;
-    }
-
-    header button, .sidebar-toggle {
-      background: var(--accent-color);
+    header h1 { margin: 0; font-size: 1.2em; }
+    header button {
+      background: #10a37f;
       border: none;
-      color: var(--text-color);
-      padding: clamp(0.5rem, 1vw, 0.8rem) clamp(1rem, 2vw, 1.5rem);
-      border-radius: clamp(20px, 2vw, 25px);
+      color: white;
+      padding: 0.5em 1em;
+      border-radius: 5px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 500;
-      box-shadow: var(--shadow);
-      font-size: clamp(0.9rem, 1.5vw, 1rem);
     }
-
-    .sidebar-toggle {
-      display: none;
-      padding: clamp(0.5rem, 1vw, 0.8rem);
-      border-radius: 50%;
-    }
-
-    header button:hover, .sidebar-toggle:hover {
-      background: var(--accent-hover);
-      transform: translateY(-3px);
-    }
-
+    header button:hover { background: #0d8b68; }
+    /* Chat container */
     .chat-container {
       flex: 1;
       overflow-y: auto;
-      padding: clamp(1rem, 2vw, 2rem);
-      max-width: clamp(800px, 90vw, 1300px);
-      margin: 0 auto;
-      width: 100%;
+      padding: 1em;
       display: flex;
       flex-direction: column;
-      gap: clamp(1rem, 1.5vw, 1.5rem);
+      gap: 1em;
     }
-
+    /* Message bubbles */
     .message {
-      max-width: clamp(60%, 75vw, 75%);
-      padding: clamp(0.8rem, 1.5vw, 1.2rem) clamp(1rem, 2vw, 1.8rem);
-      border-radius: clamp(14px, 2vw, 20px);
-      word-wrap: break-word;
-      animation: floatIn 0.4s ease-out forwards;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s ease;
-      position: relative;
-    }
-
-    .message:hover {
-      transform: translateY(-3px);
-    }
-
-    .user {
-      align-self: flex-end;
-      background: var(--user-bubble);
-    }
-
-    .assistant {
-      align-self: flex-start;
-      background: var(--assistant-bubble);
-    }
-
-    @keyframes floatIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .code-canvas {
-      background: var(--code-bg);
-      border: 1px solid var(--code-border);
-      border-radius: clamp(10px, 1.5vw, 14px);
-      padding: clamp(1rem, 1.5vw, 1.5rem);
-      margin-top: clamp(0.5rem, 1vw, 1rem);
-      position: relative;
-      font-family: 'Fira Code', 'Courier New', monospace;
-      font-size: clamp(0.85rem, 1.2vw, 0.95rem);
-      box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.15);
-      overflow-x: auto;
-      max-width: 100%;
-    }
-
-    .code-canvas pre {
+      max-width: 70%;
+      padding: 1em;
+      border-radius: 8px;
+      line-height: 1.4;
       white-space: pre-wrap;
       word-wrap: break-word;
     }
-
-    .copy-btn, .download-btn {
-      position: absolute;
-      top: clamp(0.5rem, 1vw, 0.8rem);
-      right: clamp(0.5rem, 1vw, 0.8rem);
-      background: var(--accent-color);
-      border: none;
-      padding: clamp(0.3rem, 0.8vw, 0.5rem) clamp(0.8rem, 1.5vw, 1.2rem);
-      border-radius: clamp(15px, 2vw, 20px);
-      cursor: pointer;
-      color: var(--text-color);
-      font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-      transition: background 0.3s ease;
+    .user {
+      align-self: flex-end;
+      background: #10a37f;
+      color: white;
     }
-
-    .download-btn {
-      top: auto;
-      bottom: clamp(0.5rem, 1vw, 0.8rem);
+    .assistant {
+      align-self: flex-start;
+      background: #444654;
     }
-
-    .copy-btn:hover, .download-btn:hover {
-      background: var(--accent-hover);
-    }
-
+    /* Input area */
     .input-area {
-      background: var(--input-bg);
-      padding: clamp(1rem, 1.5vw, 1.5rem) clamp(1.5rem, 2vw, 2rem);
+      background: #40414f;
+      padding: 1em;
       display: flex;
-      gap: clamp(0.8rem, 1vw, 1rem);
-      box-shadow: var(--shadow);
-      max-width: clamp(800px, 90vw, 1300px);
-      margin: 0 auto;
-      width: 100%;
-      align-items: center;
     }
-
-    .input-wrapper {
+    .input-area input {
       flex: 1;
-      min-width: clamp(200px, 50vw, 280px);
-      display: flex;
-      align-items: center;
-      gap: clamp(0.5rem, 1vw, 1rem);
-      background: var(--header-bg);
-      padding: clamp(0.4rem, 0.8vw, 0.6rem);
-      border-radius: clamp(25px, 3vw, 30px);
-      box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.15);
-    }
-
-    .input-area input[type="text"] {
-      flex: 1;
-      padding: clamp(0.8rem, 1.5vw, 1rem) clamp(1rem, 1.5vw, 1.2rem);
+      padding: 0.5em;
       border: none;
-      border-radius: clamp(20px, 2.5vw, 25px);
-      background: transparent;
-      color: var(--text-color);
-      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-      outline: none;
+      border-radius: 5px;
+      background: #202123;
+      color: white;
     }
-
-    .input-area input[type="file"] {
-      display: none;
-    }
-
-    .msg-btn, .image-gen-btn, .upload-btn {
-      background: var(--accent-color);
+    .input-area button {
+      margin-left: 0.5em;
+      background: #10a37f;
       border: none;
-      width: clamp(36px, 5vw, 45px);
-      height: clamp(36px, 5vw, 45px);
-      border-radius: 50%;
+      color: white;
+      padding: 0.5em 1em;
+      border-radius: 5px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(1rem, 1.8vw, 1.3rem);
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow);
     }
-
-    .msg-btn:hover, .image-gen-btn:hover, .upload-btn:hover {
-      background: var(--accent-hover);
-      transform: scale(1.1);
+    .input-area button:hover {
+      background: #0d8b68;
     }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: clamp(0.2rem, 0.5vw, 0.4rem);
+    /* Typing indicator */
+    .typing-indicator {
+      display: inline-block;
+      margin-left: 5px;
     }
-
-    .status-indicator span {
-      width: clamp(8px, 1vw, 10px);
-      height: clamp(8px, 1vw, 10px);
-      background: var(--accent-color);
+    .typing-indicator span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin: 0 2px;
+      background: white;
       border-radius: 50%;
-      animation: pulse 1.2s infinite;
+      opacity: 0;
+      animation: typing 1s infinite;
     }
-
-    .status-indicator span:nth-child(1) { animation-delay: 0s; }
-    .status-indicator span:nth-child(2) { animation-delay: 0.4s; }
-    .status-indicator span:nth-child(3) { animation-delay: 0.8s; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.1); }
+    .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0% { opacity: 0.2; }
+      20% { opacity: 1; }
+      100% { opacity: 0.2; }
     }
-
-    .generated-image, .uploaded-image {
-      max-width: 100%;
-      width: 100%;
-      border-radius: clamp(10px, 1.5vw, 14px);
-      margin-top: clamp(0.5rem, 1vw, 1rem);
-      box-shadow: var(--shadow);
-      transition: transform 0.2s ease;
+    /* Code block style */
+    .code-block {
+      background-color: #202123;
+      border: 1px solid #444;
+      border-radius: 5px;
+      padding: 1em;
+      margin-top: 0.5em;
+      position: relative;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-x: auto;
     }
-
-    .generated-image:hover, .uploaded-image:hover {
-      transform: scale(1.03);
+    .copy-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: #10a37f;
+      border: none;
+      color: white;
+      padding: 0.2em 0.5em;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8em;
     }
-
-    @media (max-width: 900px) {
-      .sidebar {
-        position: absolute;
-        height: 100%;
-        z-index: 20;
-        width: clamp(200px, 30vw, 260px);
-      }
-      
-      .sidebar.hidden {
-        transform: translateX(-100%);
-      }
-      
-      .sidebar-toggle {
-        display: block;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .message {
-        max-width: 85%;
-      }
-      
-      .input-area {
-        padding: clamp(0.8rem, 1.5vw, 1rem);
-      }
-      
-      .input-wrapper {
-        min-width: clamp(180px, 50vw, 220px);
-      }
-    }
-
-    @media (max-width: 480px) {
-      .input-wrapper {
-        flex-wrap: wrap;
-        padding: clamp(0.3rem, 0.8vw, 0.5rem);
-        gap: clamp(0.4rem, 1vw, 0.8rem);
-      }
-      
-      .msg-btn, .image-gen-btn, .upload-btn {
-        width: clamp(32px, 8vw, 36px);
-        height: clamp(32px, 8vw, 36px);
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
-      }
-      
-      .sidebar {
-        width: clamp(180px, 50vw, 220px);
-      }
+    .copy-button:hover {
+      background-color: #0d8b68;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar hidden" id="sidebar">
-      <div class="chat-list" id="chat-list"></div>
-    </div>
-    
-    <div class="main-content">
-      <header>
-        <div class="header-buttons">
-          <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
-          <h1>Chat Bot with Image Generation</h1>
-        </div>
-        <button onclick="newChat()">New Chat</button>
-      </header>
+  <header>
+    <h1>ChatGPT-like Interface</h1>
+    <button onclick="newChat()">New Chat</button>
+  </header>
 
-      <div class="chat-container" id="chat-container"></div>
+  <div class="chat-container" id="chat-container">
+    <!-- Chat messages will appear here -->
+  </div>
 
-      <div class="input-area">
-        <div class="input-wrapper">
-          <input type="text" id="user-input" placeholder="Ask me anything...">
-          <button class="msg-btn" onclick="sendMessage()" title="Send Message">✉️</button>
-          <button class="image-gen-btn" onclick="generateImageFromInput()" title="Generate Image">🖼️</button>
-          <label for="image-upload" class="upload-btn" title="Upload Image">📤</label>
-          <input type="file" id="image-upload" accept="image/*" onchange="uploadImageWithText()">
-        </div>
-      </div>
-    </div>
+  <div class="input-area">
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
   </div>
 
   <script>
+    // API endpoint – modify as needed
     const API_URL = "https://dev-pycodz-blackbox.pantheonsite.io/DEvZ44d/deepseek.php?text=";
-    const IMAGE_API_URL = "https://dev-pycodz-blackbox.pantheonsite.io/DEvZ44d/imger.php?img=";
-    let chats = [];
-    let currentChatId = null;
+    // Array to hold chat messages; each message is an object:
+    // { id, role ('user' or 'assistant'), content, typed (for typing indicator), codeBlocks (array) }
     let messages = [];
-    let lastUploadedImage = null;
 
-    async function sendMessage() {
+    // Send the user's message
+    function sendMessage() {
       const inputField = document.getElementById('user-input');
       const text = inputField.value.trim();
       if (!text) return;
-
-      addMessage("user", text);
-      updateChatList(text);
       inputField.value = "";
       
-      if (text.toLowerCase().includes("generate image")) {
-        await generateImage(text);
-        return;
-      }
-
-      const tempId = addMessage("assistant", "Typing", true);
-
-      try {
-        let query = text;
-        if (lastUploadedImage) {
-          query = `Analyze this image: ${text} (Image context: uploaded image)`;
-        }
-        const response = await fetch(API_URL + encodeURIComponent(query));
-        const data = await response.text();
-        removeMessage(tempId);
-
-        const { textOnly, codeBlocks } = parseAiResponse(data);
-        addMessage("assistant", textOnly, false, codeBlocks);
-      } catch (err) {
-        removeMessage(tempId);
-        addMessage("assistant", "Error connecting to AI.", false);
-        console.error(err);
-      }
-    }
-
-    async function generateImage(prompt) {
-      const tempId = addMessage("assistant", "Generating", true);
-
-      try {
-        const imageUrl = IMAGE_API_URL + encodeURIComponent(prompt);
-        const response = await fetch(imageUrl);
-        if (!response.ok) throw new Error("Failed to generate image");
-
-        removeMessage(tempId);
-        addImageMessage(imageUrl, true);
-      } catch (err) {
-        removeMessage(tempId);
-        addMessage("assistant", "Failed to generate image.", false);
-        console.error(err);
-      }
-    }
-
-    async function generateImageFromInput() {
-      const inputField = document.getElementById('user-input');
-      const text = inputField.value.trim();
-      if (!text) return;
-
+      // Add user's message
       addMessage("user", text);
-      updateChatList(text);
-      await generateImage(text);
+      
+      // Add an assistant "typing" placeholder
+      const tempId = addMessage("assistant", "", true);
+      
+      // Call the API
+      fetch(API_URL + encodeURIComponent(text))
+        .then(res => res.text())
+        .then(data => {
+          // Remove the typing placeholder
+          removeMessage(tempId);
+          
+          // Parse the API response, extracting code blocks if any
+          const { textOnly, codeBlocks } = parseAiResponse(data);
+          // Add the assistant's final message with typing animation
+          addMessage("assistant", textOnly, false, codeBlocks);
+        })
+        .catch(err => {
+          removeMessage(tempId);
+          addMessage("assistant", "Error connecting to AI.", false);
+          console.error(err);
+        });
     }
 
-    async function uploadImageWithText() {
-      const inputField = document.getElementById('user-input');
-      const text = inputField.value.trim();
-      const fileInput = document.getElementById('image-upload');
-      const file = fileInput.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        const imageUrl = e.target.result;
-        lastUploadedImage = imageUrl;
-        
-        let messageContent = text ? text : "Uploaded an image";
-        addMessage("user", messageContent, false, [], imageUrl, false);
-        
-        if (text) {
-          const tempId = addMessage("assistant", "Analyzing", true);
-          try {
-            const query = `Analyze this image: ${text} (Image context: uploaded image)`;
-            const response = await fetch(API_URL + encodeURIComponent(query));
-            const data = await response.text();
-            removeMessage(tempId);
-            const { textOnly, codeBlocks } = parseAiResponse(data);
-            addMessage("assistant", textOnly, false, codeBlocks);
-          } catch (err) {
-            removeMessage(tempId);
-            addMessage("assistant", "Error analyzing image.", false);
-            console.error(err);
-          }
-        }
-        
-        inputField.value = "";
-        fileInput.value = "";
-        updateChatList(messageContent);
-      };
-      reader.readAsDataURL(file);
-    }
-
+    // Clear the chat for a new conversation
     function newChat() {
       messages = [];
-      currentChatId = Date.now();
-      chats.push({ id: currentChatId, title: "New Chat" });
-      lastUploadedImage = null;
-      updateChatList();
       renderMessages();
     }
 
-    function addMessage(role, content, typed = false, codeBlocks = [], imageUrl = null, downloadable = false) {
+    // Add a message to the messages array and render
+    // "typed" indicates a placeholder (e.g. typing indicator)
+    // "codeBlocks" is an array of code strings extracted from the response
+    function addMessage(role, content, typed=false, codeBlocks=[]) {
       const id = Date.now() + Math.random();
-      messages.push({ id, role, content, typed, codeBlocks, imageUrl, downloadable });
+      messages.push({ id, role, content, typed, codeBlocks });
       renderMessages();
       return id;
     }
 
-    function addImageMessage(imageUrl, downloadable = false) {
-      const id = Date.now() + Math.random();
-      messages.push({ id, role: "assistant", content: "Here's your generated image:", imageUrl, downloadable });
-      renderMessages();
-    }
-
+    // Remove a message by its id (used for removing typing placeholders)
     function removeMessage(id) {
       messages = messages.filter(m => m.id !== id);
       renderMessages();
     }
 
+    // Render all messages to the chat container
     function renderMessages() {
       const container = document.getElementById("chat-container");
       container.innerHTML = "";
-
+      
       messages.forEach(msg => {
         const bubble = document.createElement("div");
         bubble.classList.add("message", msg.role);
-
+        
         if (msg.typed) {
-          bubble.innerHTML = `
-            ${msg.content} 
-            <span class="status-indicator">
-              <span></span><span></span><span></span>
-            </span>
-          `;
+          bubble.innerHTML = `Typing <span class="typing-indicator"><span></span><span></span><span></span></span>`;
+          container.appendChild(bubble);
         } else {
-          bubble.textContent = msg.content;
-          if (msg.imageUrl) {
-            const img = document.createElement("img");
-            img.src = msg.imageUrl;
-            img.classList.add(msg.downloadable ? "generated-image" : "uploaded-image");
-            bubble.appendChild(img);
-
-            if (msg.downloadable) {
-              const downloadBtn = document.createElement("button");
-              downloadBtn.classList.add("download-btn");
-              downloadBtn.textContent = "Download";
-              downloadBtn.onclick = () => downloadImage(msg.imageUrl);
-              bubble.appendChild(downloadBtn);
-            }
-          }
-          if (msg.codeBlocks?.length > 0) {
-            msg.codeBlocks.forEach(code => {
-              const codeCanvas = document.createElement("div");
-              codeCanvas.classList.add("code-canvas");
-              
-              const pre = document.createElement("pre");
-              pre.textContent = code;
-              codeCanvas.appendChild(pre);
-
-              const copyBtn = document.createElement("button");
-              copyBtn.classList.add("copy-btn");
-              copyBtn.textContent = "Copy";
-              copyBtn.onclick = () => copyToClipboard(code);
-              codeCanvas.appendChild(copyBtn);
-
-              bubble.appendChild(codeCanvas);
+          if (msg.role === "assistant") {
+            // For assistant messages, type out the text
+            bubble.textContent = "";
+            container.appendChild(bubble);
+            typeText(bubble, msg.content, 0, () => {
+              // After text animation, if there are code blocks, render each
+              if (msg.codeBlocks && msg.codeBlocks.length > 0) {
+                msg.codeBlocks.forEach(code => {
+                  const codeElem = renderCodeBlock(code);
+                  bubble.appendChild(codeElem);
+                });
+              }
             });
+          } else {
+            // For user messages, display immediately
+            bubble.textContent = msg.content;
+            container.appendChild(bubble);
           }
         }
-        container.appendChild(bubble);
       });
-
+      // Scroll to the bottom of the chat container
       container.scrollTop = container.scrollHeight;
     }
 
-    function downloadImage(imageUrl) {
-      const link = document.createElement('a');
-      link.href = imageUrl;
-      link.download = `generated-image-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function updateChatList(firstMessage = null) {
-      const chatList = document.getElementById("chat-list");
-      chatList.innerHTML = "";
-
-      if (firstMessage && currentChatId) {
-        const currentChat = chats.find(chat => chat.id === currentChatId);
-        if (currentChat) {
-          currentChat.title = firstMessage.substring(0, 30) + (firstMessage.length > 30 ? "..." : "");
-        }
+    // Animate typing of text into an element
+    function typeText(element, text, index, callback) {
+      if (index < text.length) {
+        element.textContent += text.charAt(index);
+        setTimeout(() => typeText(element, text, index + 1, callback), 20);
+      } else {
+        if (callback) callback();
       }
-
-      chats.forEach(chat => {
-        const item = document.createElement("div");
-        item.classList.add("chat-item");
-        if (chat.id === currentChatId) item.classList.add("active");
-        item.textContent = chat.title;
-        item.onclick = () => switchChat(chat.id);
-        chatList.appendChild(item);
-      });
     }
 
-    function switchChat(id) {
-      currentChatId = id;
-      messages = [];
-      lastUploadedImage = null;
-      renderMessages();
-      updateChatList();
-      toggleSidebar();
+    // Create and return a code block element with a "Copy" button
+    function renderCodeBlock(code) {
+      const container = document.createElement("div");
+      container.classList.add("code-block");
+      
+      const pre = document.createElement("pre");
+      pre.textContent = code;
+      container.appendChild(pre);
+      
+      const copyBtn = document.createElement("button");
+      copyBtn.classList.add("copy-button");
+      copyBtn.textContent = "Copy";
+      copyBtn.onclick = function() {
+        copyToClipboard(code);
+      };
+      container.appendChild(copyBtn);
+      
+      return container;
     }
 
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("hidden");
-    }
-
+    // Copy provided text to clipboard
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
         alert("Code copied!");
@@ -636,34 +292,36 @@
       });
     }
 
+    // Parse the API response, extract code blocks (delimited by triple backticks),
+    // and remove unwanted text (like "channel:" or "last update:").
     function parseAiResponse(data) {
       let text = data;
       let codeBlocks = [];
-
+      
+      // Try to parse as JSON first (if applicable)
       try {
         const parsed = JSON.parse(data);
-        if (parsed.response) text = parsed.response;
-      } catch (e) {}
-
+        if (parsed.response) {
+          text = parsed.response;
+        }
+      } catch(e) {
+        // Not JSON – treat as plain text
+      }
+      
+      // Remove unwanted labels
       text = text.replace(/channel:.*/gi, "").replace(/last update:.*/gi, "").trim();
-
+      
+      // Extract code blocks marked by triple backticks
       const codeRegex = /```([\s\S]*?)```/g;
       let match;
       while ((match = codeRegex.exec(text)) !== null) {
         codeBlocks.push(match[1].trim());
       }
+      // Remove the code blocks from the text so that only the non-code part remains
       text = text.replace(codeRegex, "").trim();
-
+      
       return { textOnly: text, codeBlocks };
     }
-
-    document.getElementById('user-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendMessage();
-    });
-
-    window.onload = function() {
-      newChat();
-    };
   </script>
 </body>
 </html>
